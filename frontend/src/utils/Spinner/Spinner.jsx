@@ -1,6 +1,6 @@
-import React from 'react';
-import styles from './Spinner.module.css';
+import React from 'react'
+import styles from './Spinner.module.css'
 
-const Spinner = () => <div className={styles.ldsdualring} />;
+const Spinner = () => <div className={styles.ldsdualring} />
 
-export default Spinner;
+export default Spinner

@@ -1,90 +1,94 @@
 import {
-	Box,
-	Button,
-	Grid,
-	makeStyles,
-	TablePagination,
-	Typography,
-} from '@material-ui/core';
-import axios from '../api/index';
-import React, { useState } from 'react';
-import Spinner from '../utils/Spinner/Spinner';
-import CardThing from '../components/CardThing';
-import { Link } from 'react-router-dom';
+  Box,
+  Button,
+  Grid,
+  makeStyles,
+  TablePagination,
+  Typography
+} from '@material-ui/core'
+import axios from '../api/index'
+import React, { useState } from 'react'
+import Spinner from '../utils/Spinner/Spinner'
+import CardThing from '../components/CardThing'
+import { Link } from 'react-router-dom'
 
 const useStyle = makeStyles({
-	root: {
-		margin: '1rem 1rem',
-	},
-	button: {
-		marginBottom: '1rem',
-	},
-	container: {
-		maxWidth: '20rem',
-		margin: '2rem auto',
-	},
-});
+  root: {
+    margin: '1rem 1rem'
+  },
+  button: {
+    marginBottom: '1rem'
+  },
+  container: {
+    maxWidth: '20rem',
+    margin: '2rem auto'
+  }
+})
 
 const Home = () => {
-	const classes = useStyle();
-	const [loading, setLoading] = useState(false);
-	const [data, setData] = useState([]);
-	const [processed, setProcessed] = useState(false);
+  const classes = useStyle()
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState([])
+  const [processed, setProcessed] = useState(false)
 
-	// For pagination
-	const [cardsPerPage, setCardsPerPage] = useState(10);
-	const [page, setPage] = useState(1);
+  // For pagination
+  const [cardsPerPage, setCardsPerPage] = useState(10)
+  const [page, setPage] = useState(1)
 
-	const handlePageChange = (e, newPage) => {
-		setPage(newPage);
-	};
+  const handlePageChange = (e, newPage) => {
+    setPage(newPage)
+  }
 
-	const handleCardsPerPage = (e) => {
-		setCardsPerPage(e.target.value, 10);
-		setPage(1);
-	};
+  const handleCardsPerPage = (e) => {
+    setCardsPerPage(e.target.value, 10)
+    setPage(1)
+  }
 
-	const getAllData = () => {
-		setLoading(true);
-		axios.get('/fetch').then((response) => {
-			setLoading(false);
-			setData(response.data.data);
-		});
-	};
+  const getAllData = () => {
+    setLoading(true)
+    axios
+      .get('/fetch', {
+        headers: headers
+      })
+      .then((response) => {
+        setLoading(false)
+        setData(response.data.data)
+      })
+  }
 
-	const headers = {
-		JWTsvestedThing: localStorage.getItem('JWTsvestedThing'),
-	};
+  const headers = {
+    Authoriszation: `Authoriszation Bearer ${localStorage.getItem(
+			'JWTsvestedThing'
+		)}`
+  }
 
-	const postHeaderAndProcess = () => {
-		setLoading(true);
-		axios
-			.post(
-				'/process',
-				{},
-				{
-					headers: headers,
-				}
-			)
-			.then((response) => {
-				setLoading(false);
-				setProcessed(true);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
+  const postHeaderAndProcess = () => {
+    setLoading(true)
+    axios
+      .post('/process', {}, {})
+      .then((response) => {
+        console.log(response)
+        setLoading(false)
+        setProcessed(true)
+      })
+      .catch((err) => {
+        console.log(err)
+        setLoading(false)
+      })
+  }
 
-	return (
+  return (
 		<Box className={classes.root}>
 			<Typography variant='h4' color='primary' gutterBottom align='center'>
 				Welcome!
 			</Typography>
-			{localStorage.getItem('JWTsvestedThing') ? (
+			{localStorage.getItem('JWTsvestedThing')
+			  ? (
 				<Typography align='center' variant='h6'>
 					Signed In!
 				</Typography>
-			) : (
+			    )
+			  : (
 				<Typography align='center' variant='h6'>
 					Please Sign up{' '}
 					<Link
@@ -94,14 +98,14 @@ const Home = () => {
 						here!
 					</Link>
 				</Typography>
-			)}
+			    )}
 			<Box className={classes.container}>
 				<Button
 					color='secondary'
 					variant='contained'
 					className={classes.button}
 					onClick={postHeaderAndProcess}
-					disabled={localStorage.getItem('JWTsvestedThing') ? false : true}
+					disabled={!localStorage.getItem('JWTsvestedThing')}
 					fullWidth
 				>
 					/process
@@ -117,7 +121,8 @@ const Home = () => {
 				</Button>
 				{loading ? <Spinner /> : null}
 			</Box>
-			{processed ? (
+			{processed
+			  ? (
 				<Typography
 					variant='h6'
 					align='center'
@@ -126,29 +131,35 @@ const Home = () => {
 				>
 					Successfully processed!
 				</Typography>
-			) : null}
+			    )
+			  : null}
 			<Grid container spacing={3}>
-				{data.length !== 0 &&
-					data
-						.slice(page * cardsPerPage, page * cardsPerPage + cardsPerPage)
-						.map((item) => (
-							<Grid item xs={6} sm={4} md={3} lg={2}>
-								<CardThing item={item} key={item.createdAt} />
-							</Grid>
-						))}
+				{data.length !== 0 && (
+					<>
+						{data
+						  .slice(page * cardsPerPage, page * cardsPerPage + cardsPerPage)
+						  .map((item) => (
+								<Grid item xs={6} sm={4} md={3} lg={2} key={item.id}>
+									<CardThing item={item} key={item.createdAt} />
+								</Grid>
+						  ))}
+					</>
+				)}
 			</Grid>
-			<TablePagination
-				component='div'
-				rowsPerPageOptions={[10, 25, 50, 100]}
-				count={data.length}
-				labelRowsPerPage='Cards Per Page'
-				page={page}
-				onChangePage={handlePageChange}
-				rowsPerPage = {cardsPerPage}
-				onChangeRowsPerPage={handleCardsPerPage}
-			/>
+			{data.length !== 0 && (
+				<TablePagination
+					component='div'
+					rowsPerPageOptions={[10, 25, 50, 100]}
+					count={data.length}
+					labelRowsPerPage='Cards Per Page'
+					page={page}
+					onChangePage={handlePageChange}
+					rowsPerPage={cardsPerPage}
+					onChangeRowsPerPage={handleCardsPerPage}
+				/>
+			)}
 		</Box>
-	);
-};
+  )
+}
 
-export default Home;
+export default Home

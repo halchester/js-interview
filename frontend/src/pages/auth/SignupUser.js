@@ -1,48 +1,49 @@
+import React, { useState } from 'react'
 import {
-	Box,
-	Button,
-	makeStyles,
-	TextField,
-	Typography,
-} from '@material-ui/core';
+  Box,
+  Button,
+  makeStyles,
+  TextField,
+  Typography
+} from '@material-ui/core'
 // import axios from 'axios';
-import { Formik } from 'formik';
-import { signupValidation } from '../../utils/formValidation';
-import axios from '../../api/index';
-import { useHistory } from 'react-router';
-import { useState } from 'react';
-import Spinner from '../../utils/Spinner/Spinner';
+import { Formik } from 'formik'
+import { signupValidation } from '../../utils/formValidation'
+import axios from '../../api/index'
+import { useHistory } from 'react-router'
+
+import Spinner from '../../utils/Spinner/Spinner'
 
 const FormikInitialValues = {
-	email: '',
-	password: '',
-};
+  username: '',
+  password: ''
+}
 
 const useStyle = makeStyles({
-	root: {
-		margin: '1rem 1rem',
-	},
-	formContainer: {
-		width: '25rem',
-	},
-	form: {
-		display: 'flex',
-		flexDirection: 'row',
-		marginTop: '2rem',
-		justifyContent: 'center',
-	},
-	input: {
-		marginBottom: '1rem',
-	},
-});
+  root: {
+    margin: '1rem 1rem'
+  },
+  formContainer: {
+    width: '25rem'
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: '2rem',
+    justifyContent: 'center'
+  },
+  input: {
+    marginBottom: '1rem'
+  }
+})
 
 const SignupUser = () => {
-	const classes = useStyle();
-	const history = useHistory();
+  const classes = useStyle()
+  const history = useHistory()
 
-	const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-	return (
+  return (
 		<Box className={classes.root}>
 			<Typography variant='h4' align='center' gutterBottom>
 				Please Sign up!
@@ -51,39 +52,39 @@ const SignupUser = () => {
 				<Formik
 					validationSchema={signupValidation}
 					initialValues={FormikInitialValues}
-					onSubmit={({ email, password }) => {
-						setLoading(true);
-						const payload = { email, password };
-						axios
-							.post('/signup', payload)
-							.then((response) => {
-								setLoading(false);
-								localStorage.setItem('JWTsvestedThing', response.data);
-								history.push('/');
-							})
-							.catch((err) => console.log(err));
+					onSubmit={({ username, password }) => {
+					  setLoading(true)
+					  const payload = { username, password }
+					  axios
+					    .post('/signup', payload)
+					    .then((response) => {
+					      setLoading(false)
+					      localStorage.setItem('JWTsvestedThing', response.data.token)
+					      history.push('/')
+					    })
+					    .catch((err) => console.log(err))
 					}}
 				>
 					{({
-						values,
-						errors,
-						touched,
-						handleChange,
-						handleBlur,
-						handleSubmit,
+					  values,
+					  errors,
+					  touched,
+					  handleChange,
+					  handleBlur,
+					  handleSubmit
 					}) => (
 						<form className={classes.formContainer} onSubmit={handleSubmit}>
 							<TextField
-								value={values.email}
-								name='email'
-								id='email'
+								value={values.username}
+								name='username'
+								id='username'
 								onChange={handleChange}
 								onBlur={handleBlur}
-								label='Email'
-								type='email'
+								label='Username'
+								type='username'
 								variant='outlined'
-								error={Boolean(touched.email) && Boolean(errors.email)}
-								helperText={touched.email && errors.email}
+								error={Boolean(touched.username) && Boolean(errors.username)}
+								helperText={touched.username && errors.username}
 								fullWidth
 								className={classes.input}
 							/>
@@ -113,10 +114,10 @@ const SignupUser = () => {
 						</form>
 					)}
 				</Formik>
-				{loading ? <Spinner /> : null}
 			</Box>
+			{loading ? <Spinner /> : null}
 		</Box>
-	);
-};
+  )
+}
 
-export default SignupUser;
+export default SignupUser
