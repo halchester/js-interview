@@ -1,4 +1,11 @@
-import { Box, Button, Grid, makeStyles, Typography } from '@material-ui/core';
+import {
+	Box,
+	Button,
+	Grid,
+	makeStyles,
+	TablePagination,
+	Typography,
+} from '@material-ui/core';
 import axios from '../api/index';
 import React, { useState } from 'react';
 import Spinner from '../utils/Spinner/Spinner';
@@ -23,6 +30,19 @@ const Home = () => {
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState([]);
 	const [processed, setProcessed] = useState(false);
+
+	// For pagination
+	const [cardsPerPage, setCardsPerPage] = useState(10);
+	const [page, setPage] = useState(1);
+
+	const handlePageChange = (e, newPage) => {
+		setPage(newPage);
+	};
+
+	const handleCardsPerPage = (e) => {
+		setCardsPerPage(e.target.value, 10);
+		setPage(1);
+	};
 
 	const getAllData = () => {
 		setLoading(true);
@@ -98,18 +118,35 @@ const Home = () => {
 				{loading ? <Spinner /> : null}
 			</Box>
 			{processed ? (
-				<Typography variant='h6' align='center' style={{ color: 'green' }}>
+				<Typography
+					variant='h6'
+					align='center'
+					style={{ color: 'green' }}
+					gutterBottom
+				>
 					Successfully processed!
 				</Typography>
 			) : null}
 			<Grid container spacing={3}>
 				{data.length !== 0 &&
-					data.map((item) => (
-						<Grid item xs={6} sm={4} md={3} lg={2}>
-							<CardThing item={item} key={item.createdAt} />
-						</Grid>
-					))}
+					data
+						.slice(page * cardsPerPage, page * cardsPerPage + cardsPerPage)
+						.map((item) => (
+							<Grid item xs={6} sm={4} md={3} lg={2}>
+								<CardThing item={item} key={item.createdAt} />
+							</Grid>
+						))}
 			</Grid>
+			<TablePagination
+				component='div'
+				rowsPerPageOptions={[10, 25, 50, 100]}
+				count={data.length}
+				labelRowsPerPage='Cards Per Page'
+				page={page}
+				onChangePage={handlePageChange}
+				rowsPerPage = {cardsPerPage}
+				onChangeRowsPerPage={handleCardsPerPage}
+			/>
 		</Box>
 	);
 };
