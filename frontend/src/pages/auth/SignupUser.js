@@ -9,6 +9,9 @@ import {
 import { Formik } from 'formik';
 import { signupValidation } from '../../utils/formValidation';
 import axios from '../../api/index';
+import { useHistory } from 'react-router';
+import { useState } from 'react';
+import Spinner from '../../utils/Spinner/Spinner';
 
 const FormikInitialValues = {
 	email: '',
@@ -35,6 +38,10 @@ const useStyle = makeStyles({
 
 const SignupUser = () => {
 	const classes = useStyle();
+	const history = useHistory();
+
+	const [loading, setLoading] = useState(false);
+
 	return (
 		<Box className={classes.root}>
 			<Typography variant='h4' align='center' gutterBottom>
@@ -45,12 +52,14 @@ const SignupUser = () => {
 					validationSchema={signupValidation}
 					initialValues={FormikInitialValues}
 					onSubmit={({ email, password }) => {
+						setLoading(true);
 						const payload = { email, password };
 						axios
 							.post('/signup', payload)
 							.then((response) => {
-								// Cannot send post request
-								console.log(response);
+								setLoading(false);
+								localStorage.setItem('JWTsvestedThing', response.data);
+								history.push('/');
 							})
 							.catch((err) => console.log(err));
 					}}
@@ -104,6 +113,7 @@ const SignupUser = () => {
 						</form>
 					)}
 				</Formik>
+				{loading ? <Spinner /> : null}
 			</Box>
 		</Box>
 	);
