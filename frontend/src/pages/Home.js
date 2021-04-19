@@ -44,6 +44,10 @@ const Home = () => {
     setPage(1)
   }
 
+  const headers = {
+    Authorization: `Bearer ${localStorage.getItem('JWTsvestedThing')}`
+  }
+
   const getAllData = () => {
     setLoading(true)
     axios
@@ -56,18 +60,17 @@ const Home = () => {
       })
   }
 
-  const headers = {
-    Authoriszation: `Authoriszation Bearer ${localStorage.getItem(
-			'JWTsvestedThing'
-		)}`
-  }
-
   const postHeaderAndProcess = () => {
     setLoading(true)
     axios
-      .post('/process', {}, {})
+      .post(
+        '/process',
+        {},
+        {
+          headers: headers
+        }
+      )
       .then((response) => {
-        console.log(response)
         setLoading(false)
         setProcessed(true)
       })

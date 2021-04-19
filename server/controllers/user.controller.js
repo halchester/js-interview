@@ -1,10 +1,19 @@
 const jwt = require('jsonwebtoken');
 
 exports.getAllRandomThings = async (req, res) => {
+	const { token } = req.headers;
 	const things = require('../data.json');
-	things
-		? res.status(200).json({ success: true, data: things })
-		: res.status(400).json({ success: false, data: {} });
+	token
+		? res.status(200).json({
+				success: true,
+				data: things,
+		  })
+		: res.status(200).json({
+				success: true,
+				data: things.filter(
+					(item) => item.randAlphabet === 'a' || item.randAlphabet === 'b'
+				),
+		  });
 };
 
 exports.registerUser = async (req, res) => {
